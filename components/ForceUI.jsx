@@ -43,7 +43,7 @@ class ForceUI extends React.PureComponent {
     };
     everyoneMdl.extractEveryoneRole = () => '@everyone';
     everyoneMdl.shouldShowEveryoneGuard = () => true;
-    applyChatRestrictions(discordTextarea, 'normal', 'yes', fakeChannel, true);
+    applyChatRestrictions(discordTextarea, 'normal', 'yes', 'yes', fakeChannel, true);
     everyoneMdl.extractEveryoneRole = ogExtractEveryoneRole;
     everyoneMdl.shouldShowEveryoneGuard = ogShouldShowEveryoneGuard;
   }

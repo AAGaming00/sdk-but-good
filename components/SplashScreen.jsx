@@ -1,4 +1,4 @@
-const { join, dirname } = require('path');
+const { join } = require('path');
 const { format: formatUrl } = require('url');
 const { remote: { BrowserWindow } } = require('electron');
 const { React } = require('powercord/webpack');
@@ -83,13 +83,10 @@ class SplashScreen extends React.PureComponent {
   }
 
   openSplashScreen (keepState) {
-    console.log(module.paths, require.resolve.paths('electron'))
-    const paths = require.resolve.paths('electron')
-    const baseAsar = dirname(paths[paths.length - 1]);
     const splashIndex = formatUrl({
       protocol: 'file',
       slashes: true,
-      pathname: join(baseAsar, 'app_bootstrap/splash/index.html')
+      pathname: join(process.resourcesPath, 'app.asar/app_bootstrap/splash/index.html')
     });
     const windowSettings = {
       /*

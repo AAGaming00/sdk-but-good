@@ -20,9 +20,11 @@ class SdkWindow extends React.PureComponent {
         {this.renderHeaderBar()}
         <div className='powercord-text powercord-sdk'>
           <VerticalScroller className='powercord-sdk-container' ref = {this.scrollerRef}>
-            <ForceUI/>
-            <SplashScreen/>
-            <Settings/>
+            <div>
+              <ForceUI/>
+              <SplashScreen/>
+              <Settings/>
+            </div>
           </VerticalScroller>
         </div>
       </>
@@ -57,7 +59,8 @@ class SdkWindow extends React.PureComponent {
               return popoutModule.setAlwaysOnTop('DISCORD_POWERCORD_SANDBOX', !this.props.windowOnTop);
             }
             const el = this.props.guestWindow.document.getElementById(id);
-            this.scrollerRef.current.scrollIntoView(el);
+            console.log(this.scrollerRef, this.scrollerRef.current.getScrollerNode())
+            this.scrollerRef.current.getScrollerNode().scrollIntoView(el);
           }}
         >
           <Icon className={headerBarClasses.icon}/>
