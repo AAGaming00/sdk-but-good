@@ -11,14 +11,16 @@ module.exports = class SDKButGood extends Plugin {
   }
 
   async startPlugin () {
-    powercord.pluginManager.disable('pc-sdk')
+    try {
+      powercord.pluginManager.disable('pc-sdk');
+    } catch {}
     this.loadStylesheet('scss/style.scss');
     this._addPopoutIcon();
   }
 
   pluginWillUnload () {
     uninject('pc-sdk-icon');
-    this.reloadTitle()
+    this.reloadTitle();
   }
 
   async _addPopoutIcon () {
@@ -68,7 +70,7 @@ module.exports = class SDKButGood extends Plugin {
       return res;
     });
 
-    this.reloadTitle()
+    this.reloadTitle();
   }
 
   async _openSdk () {
@@ -79,7 +81,7 @@ module.exports = class SDKButGood extends Plugin {
         title: 'SDK'
       }, React.createElement(SdkWindow))
     );
-    popoutModule.setAlwaysOnTop('DISCORD_POWERCORD_SANDBOX', true);
+    //popoutModule.setAlwaysOnTop('DISCORD_POWERCORD_SANDBOX', true);
   }
 
   async reloadTitle () {
