@@ -1,9 +1,9 @@
 const { join } = require('path');
 const { format: formatUrl } = require('url');
-const { remote: { BrowserWindow } } = require('electron');
+const popout = require('./Window');
 const { React } = require('powercord/webpack');
 const { Flex, Button } = require('powercord/components');
-
+const fs = require('fs')
 const SplashStages = Object.freeze({
   CHECKING_FOR_UPDATES: 'CHECKING_FOR_UPDATES',
   DOWNLOADING_UPDATES: 'DOWNLOADING_UPDATES',
@@ -82,11 +82,11 @@ class SplashScreen extends React.PureComponent {
     );
   }
 
-  openSplashScreen (keepState) {
+  async openSplashScreen (keepState) {
     const splashIndex = formatUrl({
       protocol: 'file',
       slashes: true,
-      pathname: join(process.resourcesPath, 'app.asar/app_bootstrap/splash/index.html')
+      pathname: join(process.resourcesPath, 'app.asar', 'app_bootstrap', 'splash', 'index.html')
     });
     const windowSettings = {
       /*
@@ -100,17 +100,16 @@ class SplashScreen extends React.PureComponent {
       resizable: false,
       center: true,
       show: true,
-      webPreferences: {
-        preload: join(__dirname, '../../../../preloadSplash.js'),
-        nodeIntegration: true
-      }
+      url: splashIndex.replace('app.asar', 'app'),
+      html: await fs.promises.readFile(join(process.resourcesPath, 'app.asar', 'app_bootstrap', 'splash', 'index.html')),
+      js: (await fs.promises.readFile(join(process.resourcesPath, 'app.asar', 'app_bootstrap', 'splash', 'index.js'), 'utf8')).replace('../videos/connecting.webm', 'https://discord.com/assets/0bdc0497eb3a19e66f2b1e3d5741634c.webm'),
+      preload: await fs.promises.readFile(join(__dirname, '../../../../preloadSplash.js'))
     };
 
     // this._window = PowercordNative.openBrowserWindow(windowSettings);
-    this._window = new BrowserWindow(windowSettings);
-    this._window.loadURL(splashIndex);
-    this._window.webContents.openDevTools({ mode: 'detach' });
-    this._window.on('close', () => {
+    this._window = await popout(windowSettings, 'bruh', 'DISCORD_BRUH');
+    this._window.PowercordNative.openDevTools({ mode: 'detach' });
+    this._window.addEventListener('unload', () => {
       if (!this._closeScheduled) {
         this.setState({ opened: false });
         delete this._window;
@@ -154,7 +153,7 @@ class SplashScreen extends React.PureComponent {
         data.status = 'launching';
         break;
     }
-    this._window.webContents.send('DISCORD_SPLASH_UPDATE_STATE', data);
+    this._window.eval(`require("electron").ipcRenderer._events.DISCORD_SPLASH_UPDATE_STATE.forEach((e) => e("DISCORD_SPLASH_UPDATE_STATE", JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(data))}"))))`);
   }
 }
 
